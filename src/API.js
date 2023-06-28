@@ -11,3 +11,27 @@ export const getMovies = async () => {
   });
   return response.data;
 };
+
+export const getMoviesById = async id => {
+  const response = await moviesApi.get(`movie/${id}`, {
+    params: { api_key: KEY },
+  });
+
+  return response;
+};
+
+export const getCastById = async id => {
+  const response = await moviesApi.get(`movie/${id}/credits`, {
+    params: { api_key: KEY },
+  });
+
+  return response;
+};
+
+export const getReviewsById = async id => {
+  const response = await moviesApi.get(`movie/${id}/reviews`, {
+    params: { api_key: KEY },
+  });
+
+  return response;
+};

@@ -14,7 +14,6 @@ export const Home = () => {
 
     fetchMovies();
   }, []);
-  console.log(films);
 
   return (
     <main>
