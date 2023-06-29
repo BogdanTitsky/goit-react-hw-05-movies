@@ -3,7 +3,7 @@ import { getMovies } from 'API';
 import { FilmList } from 'components/FilmList/FilmList';
 import { Loader } from 'components/Loader/Loader';
 
-export const Home = () => {
+const Home = () => {
   const [films, setFilms] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -14,12 +14,9 @@ export const Home = () => {
       const movies = response.results;
       setFilms(movies);
 
-      if (response.results !== 0) {
-        setError(false);
-        setIsLoading(false);
-      } else {
+      setIsLoading(false);
+      if (!response.results) {
         setError(true);
-        setIsLoading(false);
       }
     };
 
@@ -30,9 +27,11 @@ export const Home = () => {
     <main>
       <h1>Trending today</h1>
 
+      <FilmList films={films}></FilmList>
       {isLoading && <Loader />}
       {error && <p>Oops.. Simesing went wrong</p>}
-      <FilmList films={films}></FilmList>
     </main>
   );
 };
+
+export default Home;

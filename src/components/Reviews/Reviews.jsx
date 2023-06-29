@@ -1,9 +1,12 @@
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { getReviewsById } from 'API';
+import { Loader } from 'components/Loader/Loader';
 
-export const Reviews = () => {
+const Reviews = () => {
   const [reviews, setReviews] = useState();
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(false);
   const { id } = useParams();
 
   useEffect(() => {
@@ -11,6 +14,10 @@ export const Reviews = () => {
       try {
         const response = await getReviewsById(id);
         setReviews(response.data.results);
+        setIsLoading(false);
+        if (!response.data.results) {
+          setError(true);
+        }
       } catch (error) {
         console.log(error);
       }
@@ -20,6 +27,8 @@ export const Reviews = () => {
 
   return (
     <>
+      {isLoading && <Loader />}
+      {error && <p>Oops.. Simesing went wrong</p>}
       {reviews && (
         <>
           {reviews.length > 0 ? (
@@ -41,3 +50,5 @@ export const Reviews = () => {
     </>
   );
 };
+
+export default Reviews;

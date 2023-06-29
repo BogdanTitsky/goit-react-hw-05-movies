@@ -3,19 +3,26 @@ import { getSearhedMovies } from 'API';
 import { useEffect, useState } from 'react';
 import { FilmList } from 'components/FilmList/FilmList';
 import { Notify } from 'notiflix';
+import { Loader } from 'components/Loader/Loader';
 
-export const Movies = () => {
+const Movies = () => {
   const [searchInput, setSearchInput] = useState('');
   const [films, setFilms] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
 
   useEffect(() => {
     const getFilms = async query => {
+      setIsLoading(true);
       const data = await getSearhedMovies(query);
       setFilms(data.results);
-
+      setIsLoading(false);
+      if (!data.results) {
+        setError(true);
+      }
       if (data.results.length === 0) {
-        Notify.failure('нема таких фільмів, напиши шось інше');
+        Notify.failure('There is no movies with this title');
       }
     };
 
@@ -29,7 +36,7 @@ export const Movies = () => {
     event.preventDefault();
 
     if (!searchInput) {
-      return Notify.failure('Шо ти тут шукаєш???');
+      return Notify.failure('Please, write something');
     }
     setSearchParams({ query: searchInput });
     setSearchInput('');
@@ -47,6 +54,10 @@ export const Movies = () => {
       </form>
 
       {<FilmList films={films} />}
+      {isLoading && <Loader />}
+      {error && <p>Oops.. Simesing went wrong</p>}
     </main>
   );
 };
+
+export default Movies;

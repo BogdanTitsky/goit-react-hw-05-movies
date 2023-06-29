@@ -1,9 +1,12 @@
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { getCastById } from 'API';
+import { Loader } from 'components/Loader/Loader';
 
-export const Cast = () => {
+const Cast = () => {
   const [cast, setCast] = useState();
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(false);
   const { id } = useParams();
 
   useEffect(() => {
@@ -11,6 +14,10 @@ export const Cast = () => {
       try {
         const response = await getCastById(id);
         setCast(response.data.cast);
+        setIsLoading(false);
+        if (!response.data.cast) {
+          setError(true);
+        }
       } catch (error) {
         console.log(error);
       }
@@ -20,6 +27,8 @@ export const Cast = () => {
 
   return (
     <>
+      {isLoading && <Loader />}
+      {error && <p>Oops.. Simesing went wrong</p>}
       {cast && (
         <ul>
           {cast.map(actor => {
@@ -39,3 +48,5 @@ export const Cast = () => {
     </>
   );
 };
+
+export default Cast;
