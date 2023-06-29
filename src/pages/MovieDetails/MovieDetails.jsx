@@ -1,6 +1,7 @@
 import { getMoviesById } from 'API';
 import { useEffect, useRef, useState } from 'react';
-import { Link, Outlet, useLocation, useParams } from 'react-router-dom';
+import { Outlet, useLocation, useParams, Link } from 'react-router-dom';
+import { Aditional, GoBack, MovieInfo } from './MovieDetails.styled';
 
 export const MovieDetails = () => {
   const location = useLocation();
@@ -21,36 +22,42 @@ export const MovieDetails = () => {
     getCurrentMovie();
   }, [id]);
 
-  const posterUrl =
-    currentMovie &&
-    `https://image.tmdb.org/t/p/w200${currentMovie.poster_path}`;
+  const posterUrl = currentMovie?.poster_path
+    ? `https://image.tmdb.org/t/p/w200${currentMovie.poster_path}`
+    : 'http://placehold.it/200x300';
 
   const userScore = currentMovie ? currentMovie.vote_average * 10 : null;
 
   return (
-    <>
-      <Link to={backLinkLocationRef.current}>← GO back</Link>
+    <main>
+      <GoBack to={backLinkLocationRef.current}>← GO back</GoBack>
       {currentMovie && (
         <>
-          <img src={posterUrl} alt="" />
-          <h2>{currentMovie.original_title}</h2>
-          <p>User Score: {userScore}%</p>
-          <h2>Overview</h2>
-          <p>{currentMovie.overview ?? 'There is no review'}</p>
-          <h2>Genres</h2>
-          <p>{currentMovie.genres.map(genre => genre.name).join(' ')}</p>
-          <h2>Aditional informations</h2>
-          <ul>
-            <li>
-              <Link to={'cast'}>cast</Link>
-            </li>
-            <li>
-              <Link to={'reviews'}>reviews</Link>
-            </li>
-          </ul>
+          <MovieInfo>
+            <img src={posterUrl} alt="" />
+            <div>
+              <h2>{currentMovie.original_title}</h2>
+              <p>User Score: {userScore}%</p>
+              <h2>Overview</h2>
+              <p>{currentMovie.overview ?? 'There is no review'}</p>
+              <h2>Genres</h2>
+              <p>{currentMovie.genres.map(genre => genre.name).join(' ')}</p>
+            </div>
+          </MovieInfo>
+          <Aditional>
+            <h2>Aditional informations</h2>
+            <ul>
+              <li>
+                <Link to={'cast'}>cast</Link>
+              </li>
+              <li>
+                <Link to={'reviews'}>reviews</Link>
+              </li>
+            </ul>
+          </Aditional>
         </>
       )}
       <Outlet />
-    </>
+    </main>
   );
 };

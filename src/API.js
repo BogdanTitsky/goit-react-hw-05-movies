@@ -35,3 +35,12 @@ export const getReviewsById = async id => {
 
   return response;
 };
+
+export const getSearhedMovies = async query => {
+  const response = await moviesApi.get('search/movie', {
+    params: { api_key: KEY, query },
+  });
+  return response.data;
+};
+
+//https://api.themoviedb.org/3/search/movie?query=batman
