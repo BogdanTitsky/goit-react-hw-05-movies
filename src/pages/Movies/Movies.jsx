@@ -14,18 +14,20 @@ const Movies = () => {
 
   useEffect(() => {
     const getFilms = async query => {
-      setIsLoading(true);
-      const data = await getSearhedMovies(query);
-      setFilms(data.results);
-      setIsLoading(false);
-      if (!data.results) {
+      try {
+        setIsLoading(true);
+        const data = await getSearhedMovies(query);
+        if (data.results.length === 0) {
+          return Notify.failure('There is no movies with this title');
+        }
+        setFilms(data.results);
+      } catch (error) {
         setError(true);
-      }
-      if (data.results.length === 0) {
-        Notify.failure('There is no movies with this title');
+        console.error(error);
+      } finally {
+        setIsLoading(false);
       }
     };
-
     const searchValue = searchParams.get('query');
     if (searchValue) {
       getFilms(searchValue);
@@ -35,7 +37,7 @@ const Movies = () => {
   const handleSubmit = event => {
     event.preventDefault();
 
-    if (!searchInput) {
+    if (!searchInput.trim) {
       return Notify.failure('Please, write something');
     }
     setSearchParams({ query: searchInput });
@@ -52,8 +54,7 @@ const Movies = () => {
         />
         <button type="submit">Search</button>
       </form>
-
-      {<FilmList films={films} />}
+      {films.length > 0 && <FilmList films={films} />}
       {isLoading && <Loader />}
       {error && <p>Oops.. Simesing went wrong</p>}
     </main>

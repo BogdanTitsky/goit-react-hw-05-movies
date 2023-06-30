@@ -2,24 +2,28 @@ import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { getCastById } from 'API';
 import { Loader } from 'components/Loader/Loader';
+import { Notify } from 'notiflix';
 
 const Cast = () => {
-  const [cast, setCast] = useState();
-  const [isLoading, setIsLoading] = useState(true);
+  const [cast, setCast] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(false);
-  const { id } = useParams();
+  const { id } = useParams(null);
 
   useEffect(() => {
     const getCurrentMovie = async () => {
       try {
+        setIsLoading(true);
         const response = await getCastById(id);
-        setCast(response.data.cast);
-        setIsLoading(false);
-        if (!response.data.cast) {
-          setError(true);
+        if (response.data.cast.length === 0) {
+          return Notify.failure('Oops.. There is no casts');
         }
+        setCast(response.data.cast);
       } catch (error) {
-        console.log(error);
+        setError(true);
+        console.error(error);
+      } finally {
+        setIsLoading(false);
       }
     };
     getCurrentMovie();
@@ -29,7 +33,7 @@ const Cast = () => {
     <>
       {isLoading && <Loader />}
       {error && <p>Oops.. Simesing went wrong</p>}
-      {cast && (
+      {cast.length > 0 ? (
         <ul>
           {cast.map(actor => {
             const actorsPhoto = actor.profile_path
@@ -44,6 +48,8 @@ const Cast = () => {
             );
           })}
         </ul>
+      ) : (
+        <p>We don't have any casts for this movie.</p>
       )}
     </>
   );

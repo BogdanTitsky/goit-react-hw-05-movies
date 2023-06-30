@@ -3,28 +3,32 @@ import { Suspense, useEffect, useRef, useState } from 'react';
 import { Outlet, useLocation, useParams, Link } from 'react-router-dom';
 import { Aditional, GoBack, MovieInfo } from './MovieDetails.styled';
 import { Loader } from 'components/Loader/Loader';
+import { Notify } from 'notiflix';
 
 const MovieDetails = () => {
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(false);
 
   const location = useLocation();
   const backLinkLocationRef = useRef(location.state?.from ?? '/');
 
-  const [currentMovie, setCurrentMovie] = useState();
+  const [currentMovie, setCurrentMovie] = useState(null);
   const { id } = useParams();
 
   useEffect(() => {
     const getCurrentMovie = async () => {
       try {
+        setIsLoading(true);
         const response = await getMoviesById(id);
-        setCurrentMovie(response.data);
-        setIsLoading(false);
-        if (!response.data) {
-          setError(true);
+        if (response.data.length === null) {
+          return Notify.failure('Oops.. Simesing went wrong');
         }
+        setCurrentMovie(response.data);
       } catch (error) {
-        console.log(error);
+        setError(true);
+        console.error(error);
+      } finally {
+        setIsLoading(false);
       }
     };
     getCurrentMovie();
@@ -32,7 +36,7 @@ const MovieDetails = () => {
 
   const posterUrl = currentMovie?.poster_path
     ? `https://image.tmdb.org/t/p/w200${currentMovie.poster_path}`
-    : 'http://placehold.it/200x300';
+    : 'https://placehold.it/200x300';
 
   const userScore = currentMovie ? currentMovie.vote_average * 10 : null;
 
@@ -44,7 +48,7 @@ const MovieDetails = () => {
       {currentMovie && (
         <>
           <MovieInfo>
-            <img src={posterUrl} alt="" />
+            <img src={posterUrl} alt="error" />
             <div>
               <h2>{currentMovie.original_title}</h2>
               <p>User Score: {userScore}%</p>
