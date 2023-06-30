@@ -20,5 +20,12 @@ export const FilmList = ({ films }) => {
 };
 
 FilmList.propTypes = {
-  films: PropTypes.arrayOf(PropTypes.object.isRequired),
-}.isRequired;
+  films: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number.isRequired,
+      title: PropTypes.string,
+      name: PropTypes.string,
+      original_title: PropTypes.string,
+    })
+  ).isRequired,
+};

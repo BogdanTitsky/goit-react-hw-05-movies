@@ -37,10 +37,10 @@ const Movies = () => {
   const handleSubmit = event => {
     event.preventDefault();
 
-    if (!searchInput.trim) {
+    if (!searchInput.trim()) {
       return Notify.failure('Please, write something');
     }
-    setSearchParams({ query: searchInput });
+    setSearchParams({ query: searchInput.trim() });
     setSearchInput('');
   };
 
